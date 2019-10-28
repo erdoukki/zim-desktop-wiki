@@ -2,16 +2,18 @@
 import re
 from glob import glob
 
-from tests import TestCase
+import tests
 
-class TestTranslations(TestCase):
+
+@tests.slowTest
+class TestTranslations(tests.TestCase):
 
 	def runTest(self, verbose=False):
 		'''Sanity check translation files'''
 		pot_creation_date = None
 		for file in ['translations/zim.pot'] + glob('translations/*.po'):
 			if verbose:
-				print 'Checking %s' % file
+				print('Checking %s' % file)
 
 			t = TranslationFile(file)
 
@@ -22,7 +24,7 @@ class TestTranslations(TestCase):
 				pot_creation_date = t.headers['POT-Creation-Date']
 			else:
 				if not t.headers['POT-Creation-Date'] == pot_creation_date:
-					print 'WARNING: Translation not based on up to date template: %s' % file
+					print('WARNING: Translation not based on up to date template: %s' % file)
 				self.assertTrue(t.nplural > 0, 'Missing number of plurals: %s' % file)
 
 			t.assertValid()
@@ -92,7 +94,7 @@ class TranslationMessage(object):
 	def _check_strftime_string(self):
 		for msg in self.msgstr:
 			if msg and not msg == '""':
-				for c in re.findall('\%(.)', msg):
+				for c in re.findall('%(.)', msg):
 					if c not in 'aAwdbBmyYHIpMSfzZjUWcxX%':
 						# valid charaters based on doc for datetime module
 						# other characters may be valid depending on platform
@@ -123,7 +125,7 @@ class TranslationFile(object):
 			except AssertionError as error:
 				raise AssertionError('Error while parsing %s msgid on line %i\n' % (self.file, msgidlineno) + error.message)
 
-		for line in open(file):
+		for line in open(file, encoding="UTF-8"):
 			lineno += 1
 			if not line or line.isspace():
 				flush()

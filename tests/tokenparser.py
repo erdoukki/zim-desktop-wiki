@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # Copyright 2016-2017 Jaap Karssenberg <jaap.karssenberg@gmail.com>
 
@@ -42,6 +41,36 @@ class TestTokenParser(tests.TestCase):
 			else:
 				return t
 
-		revtokens = map(correct_none_attrib, revtokens)
+		revtokens = list(map(correct_none_attrib, revtokens))
 
 		self.assertEqual(revtokens, tokens)
+
+
+class TestFunctions(tests.TestCase):
+
+	def testCollectTokens(self):
+		self.assertEqual(	# simple
+			collect_untill_end_token(
+				[('B', {}), ('T', ''), (END, 'B'), (END, 'A'), ('T', '')],
+				'A'
+			),
+				[('B', {}), ('T', ''), (END, 'B')]
+		)
+		self.assertEqual(	# nested
+			collect_untill_end_token(
+				[('A', {}), ('T', ''), (END, 'A'), (END, 'A'), ('T', '')],
+				'A'
+			),
+				[('A', {}), ('T', ''), (END, 'A')]
+		)
+		with self.assertRaises(EndOfTokenListError):
+			collect_untill_end_token(
+				[('B', {}), ('T', ''), (END, 'B'), ('T', '')],
+				'A'
+			)
+
+	def testTokensToText(self):
+		self.assertEqual(
+			tokens_to_text([('B', {}), ('T', 'Foo'), (END, 'B'), ('T', 'Bar')]),
+			'FooBar'
+		)

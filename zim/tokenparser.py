@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # Copyright 2016-2017 Jaap Karssenberg <jaap.karssenberg@gmail.com>
 
@@ -16,6 +15,37 @@ from zim.formats import NUMBEREDLIST, BULLETLIST, LISTITEM, PARAGRAPH
 
 TEXT = 'T'
 END = '/'
+
+
+class EndOfTokenListError(AssertionError):
+	pass
+
+
+def collect_untill_end_token(token_iter, end_token):
+	nesting = 0
+	tokens = []
+	for t in token_iter:
+		if t[0] == end_token:
+			nesting += 1
+		elif t == (END, end_token):
+			nesting -= 1
+			if nesting < 0:
+				break
+
+		tokens.append(t)
+	else:
+		raise EndOfTokenListError('Did not find "%s" closing tag' % end_token)
+
+	return tokens
+
+
+def tokens_to_text(token_iter):
+	text = []
+	for t in token_iter:
+		if t[0] == TEXT:
+			text.append(t[1])
+	return ''.join(text)
+
 
 class TokenBuilder(Builder):
 
@@ -241,7 +271,7 @@ def testTokenStream(token_iter):
 			assert nesting[-1] == t[1], 'Got /%s, expected /%s' % (t[1], nesting[-1])
 			nesting.pop()
 		elif t[0] == TEXT:
-			assert isinstance(t[1], basestring), 'Wrong type for text'
+			assert isinstance(t[1], str), 'Wrong type for text'
 			assert not '\n' in t[1][:-1], 'Text token should not cross line break: %r' % (t,)
 		else:
 			assert t[1] is None or isinstance(t[1], dict), 'Wrong type for attributes'

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # Copyright 2009 Pablo Angulo
 
@@ -40,18 +39,18 @@ def removeSpecialChars(s):
 	'''
 	return s.replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u').replace('ñ', 'n').replace('Á', 'A').replace('É', 'E').replace('Í', 'I').replace('Ó', 'O').replace('Ú', 'U').replace('Ñ', 'ñ')
 
-cabecera = re.compile("(={1,6})([^=\/]+?)(={1,6})")
+cabecera = re.compile("(={1,6})([^=/]+?)(={1,6})")
 inlineVerbatim = re.compile("''([^']+?)''")
 #~ multilineVerbatim=re.compile("\n[\t](.+?)\n")
-negrita = re.compile('\*\*([^\*]+?)\*\*')
-italic = re.compile('\/\/([^\/\n\]]+?)\/\/')
-bracketedURL = re.compile('\[\[(http:\/\/[^\|]+)\|([^\|]+?)\]\]')
+negrita = re.compile('\*\*([^*]+?)\*\*')
+italic = re.compile('//([^/\n\]]+?)//')
+bracketedURL = re.compile('\[\[(http://[^|]+)\|([^|]+?)\]\]')
 #TODO: separar links relativos y absolutos
-simpleRelLink = re.compile('\[\[([^:][^\|]+?)\]\]')
-namedRelLink = re.compile('\[\[([^:][^\|]+?)\|([^\|]+?)\]\]')
-simpleAbsLink = re.compile('\[\[:([^\|]+?)\]\]')
-namedAbsLink = re.compile('\[\[:([^\|]+?)\|([^\|]+?)\]\]')
-images = re.compile('([^\{])\{\{\/(.+?)\}\}')
+simpleRelLink = re.compile('\[\[([^:][^|]+?)\]\]')
+namedRelLink = re.compile('\[\[([^:][^|]+?)\|([^|]+?)\]\]')
+simpleAbsLink = re.compile('\[\[:([^|]+?)\]\]')
+namedAbsLink = re.compile('\[\[:([^|]+?)\|([^|]+?)\]\]')
+images = re.compile('([^{]){{/(.+?)\}\}')
 def translate(nota, prefix1, prefix2):
 	'''Takes a note in zim format and returns a note in trac format
 	'''
@@ -161,7 +160,7 @@ def processPath(pathin, pathout, prefix1, prefix2=''):
 			fichero.write(nota_out)
 			fichero.close()
 		elif os.path.isdir(fullPath):
-			print pathin, archivo, fullPath
+			print(pathin, archivo, fullPath)
 
 			processPath(fullPath, pathout, prefix1, prefix2 + removeSpecialChars(archivo) + "_")
 
